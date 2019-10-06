@@ -96,9 +96,9 @@ search indices or other automated data discovery tools.
 Zipped json + npy files
 ------
 
-This format consists in a zip file that contains numpy binary npy files containing the values and a json file containing the `DataArray` or `Dataset` descriptions.  
-The resulting files are similar to nump npz files but with an additional json file called *DataArray.json* when saving `DataArray` objects and *Dataset.json* when saving `Datasets`. 
-One can load the data from the zipped files with numpy.load function but in that case one gets a dictionnay of numpy arrays instead of a `~xarray.Dataset` object.
+This format consists in a zip file that contains numpy binary **npy** files containing the array values and a single **json** file containing the `DataArray` or `Dataset` descriptions.  
+The resulting files are similar to nump npz files but with an additional json file called *DataArray.json* when saving `~xarray.DataArray` objects and *Dataset.json* when saving `~xarray.Dataset` objects. 
+One can load the data from the zipped files with numpy.load function but in that case one gets a dictionnay of numpy arrays instead of a `~xarray.DataArray` or `~xarray.Dataset` object.
 For example when doing 
 
 .. ipython:: python
@@ -115,12 +115,12 @@ For example when doing
 The resulting zip file for the contains 
 
 	* a npy file named foo.npy
-	* a json file that contains the dimensions and coordinates or the dataset that corresponds to serialization of the dictionnary obtained with `ds.to_dict(data=False)` to which we add the value of the coordinates (if their number of dimensions is smaller that *min_dims_np*, see below). 
-   
-The data in coords and the array values (corresponding to the field values for DataArrays and data_vars for DataSets) can be saved either in npy files inside the zip file or inside the json file. 
-The input parameter *min_dims_np* (defaulted to *min_dims_np=2*) allows the user to control which coordinates and arrays get saved in a text format in the json file instead of a binary format in a npy file: any array (data or coordinates) whose number of dimensions is equal or larger that *min_dims_np* gets save in a npy array while arrays with lower number of dimensionsget saved in the json file. Saving one dimension arrays shuch as *dimension coordinates*  makes the data more easily accessible for humans to read when manually opening the zip file. 
+	* a json file that contains the dimensions and coordinates or the dataset that corresponds to serialization of the dictionnary obtained with `ds.to_dict(data=False)` to which we add the value of the coordinates *x*, *y* and *z*.
+	
+The data in coords and the array values (corresponding to the field *values* for DataArrays and *data_vars* for DataSets) can be saved either in npy files inside the zip file or inside the json file. 
+This is controled through the optional input parameter *min_dims_np* (defaulted to *min_dims_np=2*): any numpy array (data or coordinate) whose number of dimensions is equal or larger that *min_dims_np* gets saved in a npy array while numpy arrays with lower number of dimensionsget saved in the json file. Saving one dimensional arrays such as *dimension coordinates*  makes the data more easily accessible for humans when manually opening the zip file. 
 
-When replacing save_npys('dataset.zip',ds) by save_npys('dataset.zip',ds, min_dims_np=1) in the example above one gets a zip file that contains
+When replacing *save_npys('dataset.zip',ds)* by *save_npys('dataset.zip',ds, min_dims_np=1)* in the example above, one gets a zip file that contains
 
 	* four npy files : *foo.npy*, *x.npy*,*y.npy* and *z.npy*
 	* a json file that contains the dimensions of the arrays foo, x, y and z but not their value.		
