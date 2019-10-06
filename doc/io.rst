@@ -101,6 +101,7 @@ The resulting files are similar to nump npz files but with an additional json fi
 One can load the files fith numpy.load function but in that case will get a dictionnay of numpy arrays instead of a dataset.
 The data in coords and the array values can be saved in npy files inside the zip file or inside the json file.
 For example when doing 
+
 .. ipython:: python
 
     from xarray.npy_io import save_npys
@@ -113,17 +114,20 @@ For example when doing
     ds_loaded = load_npys('dataset.zip')
 	
 The resulting zip file for the contains 
+
 	* a npy file named foo.npy
-	* a json file that contains the dimensions and coordinates or the dataset (serialization of the dictionnary obtained with ds.to_dict(data=False) to which we add the value sof the coordinates)
+	* a json file that contains the dimensions and coordinates or the dataset (serialization of the dictionnary obtained with `ds.to_dict(data=False)` to which we add the value sof the coordinates)
    
-The input parameter *min_dims_np* (defaulted to *min_dims_np=2*) allows the user  to control what gets saved in npy files or in the json file the parameter. Any array whose number of dimensions is equalt or larger that *min_dims_np* gets save in a npy array while array with lower number of dimensionsget saved in the json file. Saving one dimension arrays shuch as *dimension coordinates*  makes the data more easily accessible for humans to read when mannually opening the zip file. 
+The input parameter *min_dims_np* (defaulted to *min_dims_np=2*) allows the user to control which coordinates and arrays gets in the json file instead of npy files: any array (data or coordinates) whose number of dimensions is equal or larger that *min_dims_np* gets save in a npy array while arrays with lower number of dimensionsget saved in the json file. Saving one dimension arrays shuch as *dimension coordinates*  makes the data more easily accessible for humans to read when manually opening the zip file. 
+
 When replacing save_npys('dataset.zip',ds) by save_npys('dataset.zip',ds, min_dims_np=1) in the example above one gets a zip file that contains
+
 	* three npy files : foo.npy, x.npy and y.npy a z.npy
 	* a json file that contain the dimension of the arrays but not the values of the coordinate arrays.		
 
 Because the internal design of xarray is still
-being refined, we make no guarantees (at this point) that structure of the json files with
-this version of xarray will work in future versions. However we save the version of the xarray in the json file in order to make it possible to use the version number to make the loading function load_npys back compatible. We also plan to allow the user to chose the format of an older xarray version when saving the data.
+being refined, we make no guarantees (at this point) that the structure of the json files with
+this version of xarray will work in future versions. However, as we save the version of the xarray in the json file, it will be possible to use the version number to make the loading function load_npys back compatible. We also plan to allow the user to specify an older format version when saving the data.
 
 netCDF
 ------
