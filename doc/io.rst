@@ -93,6 +93,38 @@ search indices or other automated data discovery tools.
 
 .. _io.netcdf:
 
+Zipped json + npy files
+------
+
+This format consists in a zip file that contains npy files containing the values and a json file containing the `DataArray` or `Dataset` descriptions.  
+The resulting files are similar to nump npz files but with an additional json file called *DataArray.json* when saving `DataArray` objects and *Dataset.json* when saving `Datasets`. 
+One can load the files fith numpy.load function but in that case will get a dictionnay of numpy arrays instead of a dataset.
+The data in coords and the array values can be saved in npy files inside the zip file or inside the json file.
+For example when doing 
+.. ipython:: python
+
+    from xarray.npy_io import save_npys
+
+    ds = xr.Dataset({'foo': (('x', 'y'), np.random.rand(4, 5))},
+                    coords={'x': [10, 20, 30, 40],
+                            'y': pd.date_range('2000-01-01', periods=5),
+                            'z': ('x', list('abcd'))})
+    save_npys('dataset.zip',ds)
+    ds_loaded = load_npys('dataset.zip')
+	
+The resulting zip file for the contains 
+	* a npy file named foo.npy
+	* a json file that contains the dimensions and coordinates or the dataset (serialization of the dictionnary obtained with ds.to_dict(data=False) to which we add the value sof the coordinates)
+   
+The input parameter *min_dims_np* (defaulted to *min_dims_np=2*) allows the user  to control what gets saved in npy files or in the json file the parameter. Any array whose number of dimensions is equalt or larger that *min_dims_np* gets save in a npy array while array with lower number of dimensionsget saved in the json file. Saving one dimension arrays shuch as *dimension coordinates*  makes the data more easily accessible for humans to read when mannually opening the zip file. 
+When replacing save_npys('dataset.zip',ds) by save_npys('dataset.zip',ds, min_dims_np=1) in the example above one gets a zip file that contains
+	* three npy files : foo.npy, x.npy and y.npy a z.npy
+	* a json file that contain the dimension of the arrays but not the values of the coordinate arrays.		
+
+Because the internal design of xarray is still
+being refined, we make no guarantees (at this point) that structure of the json files with
+this version of xarray will work in future versions. However we save the version of the xarray in the json file in order to make it possible to use the version number to make the loading function load_npys back compatible. We also plan to allow the user to chose the format of an older xarray version when saving the data.
+
 netCDF
 ------
 
@@ -256,6 +288,9 @@ will remove encoding information.
 
 
 .. _combining multiple files:
+
+
+
 
 Reading multi-file datasets
 ...........................
